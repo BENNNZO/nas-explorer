@@ -1,7 +1,7 @@
 "use client"
 
 import { use, useState, useEffect } from "react"
-import api from "@/utils/api"
+import api from "@/utils/axios"
 
 import FileList from "@/components/files/FileList"
 import BreadCrumbs from "@/components/files/BreadCrumbs"
