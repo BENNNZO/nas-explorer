@@ -26,24 +26,14 @@ export default function Files({ params }) {
 
   return (
     <div className="p-8 flex flex-col gap-8 max-w-7xl mx-auto">
-      <BreadCrumbs
-        path={path}
-      />
+      <BreadCrumbs path={path} />
 
       {error ? (
-        <ErrorMessage
-          error={error}
-        />
+        <ErrorMessage error={error} />
       ) : (
         <>
-          <DirectoryList
-            directories={directories}
-            path={path}
-          />
-
-          <FileList
-            files={files}
-          />
+          <DirectoryList directories={directories} path={path} />
+          <FileList files={files} />
         </>
       )}
     </div>
