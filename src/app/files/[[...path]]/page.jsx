@@ -23,7 +23,7 @@ export default function Files({ params }) {
   }, [])
 
   return (
-    <div className="p-8 flex flex-col gap-8">
+    <div className="p-8 flex flex-col gap-8 max-w-7xl mx-auto">
       <BreadCrumbs
         path={path}
       />
