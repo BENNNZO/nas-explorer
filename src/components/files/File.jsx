@@ -16,17 +16,17 @@ export default function File({ file }) {
     >
       <div className="flex justify-between">
         {/* Icon & file name */}
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center overflow-hidden">
           <Icon name="file-fill" />
           <p className="whitespace-nowrap text-ellipsis overflow-hidden">{file.name}</p>
         </div>
 
-        <div className="flex gap-2 items-center relative">
+        <div className="flex gap-2 items-center w-0 group-hover:w-auto shrink-0">
           {/* Download button */}
           <a href={downloadHref} download>
             <Icon
               name="download-simple"
-              className="opacity-0 group-hover:opacity-50 hover:opacity-100 invert"
+              className="opacity-50 hover:opacity-100 invert"
             />
           </a>
 
@@ -35,7 +35,7 @@ export default function File({ file }) {
             <ContextMenu.Trigger>
               <Icon
                 name="dots-three-vertical"
-                className="opacity-0 group-hover:opacity-50 hover:opacity-100 invert"
+                className="opacity-50 hover:opacity-100 invert"
               />
             </ContextMenu.Trigger>
 
