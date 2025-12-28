@@ -1,12 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
+import ContextMenu from "../utils/ContextMenu"
+import Icon from "../utils/Icon"
 
 export default function File({ file }) {
-  const [menuIsOpen, setMenuIsOpen] = useState(false)
+  const contextMenuTargetRef = useRef()
+
+  const downloadHref = `/api${location.pathname.replace('/files', '/download')}/${file.name}`
 
   return (
-    <div className={`group sm:aspect-square flex flex-col gap-2 p-2 bg-zinc-900 rounded-xl ${file.hidden ? 'opacity-50' : ''}`}>
+    <div
+      ref={contextMenuTargetRef}
+      className={`group sm:aspect-square flex flex-col gap-2 p-2 ${file.hidden ? 'bg-zinc-900/50' : 'bg-zinc-900'} rounded-xl`}
+    >
       <div className="flex justify-between">
         {/* Icon & file name */}
         <div className="flex gap-2 items-center">
@@ -16,7 +23,7 @@ export default function File({ file }) {
 
         <div className="flex gap-2 items-center relative">
           {/* Download button */}
-          <a href={`/api${location.pathname.replace('/files', '/download')}/${file.name}`} download>
+          <a href={downloadHref} download>
             <img
               src="/icons/download-simple.svg"
               alt="download icon"
@@ -24,49 +31,38 @@ export default function File({ file }) {
             />
           </a>
 
-          {/* Context menu toggle button */}
-          <button onClick={() => setMenuIsOpen(prev => !prev)} className="cursor-pointer">
-            <img
-              src="/icons/dots-three-vertical.svg"
-              alt="context menu icon"
-              className="invert size-5 opacity-0 group-hover:opacity-50 hover:opacity-100"
-            />
-          </button>
-
           {/* Context menu */}
-          {menuIsOpen && (
-            <>
-              <div className="fixed inset-0 bg-black/50 z-10" onClick={() => setMenuIsOpen(false)} />
+          <ContextMenu target={contextMenuTargetRef}>
+            <ContextMenu.Trigger>
+              <img
+                src="/icons/dots-three-vertical.svg"
+                alt="context menu icon"
+                className="invert size-5 opacity-0 group-hover:opacity-50 hover:opacity-100"
+              />
+            </ContextMenu.Trigger>
 
-              <div
-                onClick={() => setMenuIsOpen(false)}
-                className="absolute top-full right-0 z-20 overflow-hidden whitespace-nowrap flex flex-col gap-px w-48 bg-zinc-600 rounded-md"
-              >
-                <a
-                  className="text-left bg-zinc-800 px-2 py-1 hover:bg-zinc-600 cursor-pointer flex gap-2 items-center"
-                  href={`/api${location.pathname.replace('/files', '/download')}/${file.name}`}
-                  download
-                >
-                  <img
-                    src="/icons/download-simple.svg"
-                    alt="download icon"
-                    className="invert size-5 opacity-50"
-                  />
+            <ContextMenu.Content>
+              <ContextMenu.Item href={downloadHref} download>
+                <Icon name="download-simple" size={5} />
+                <p>Download</p>
+              </ContextMenu.Item>
 
-                  <p>Download</p>
-                </a>
+              <ContextMenu.Item>
+                <Icon name="pencil-simple" size={5} />
+                Edit Name
+              </ContextMenu.Item>
 
-                {/* <button className="text-left bg-zinc-700 px-2 py-1 hover:bg-zinc-600 cursor-pointer">Rename</button> */}
-
-                {/* <button className="text-left bg-zinc-700 px-2 py-1 hover:bg-zinc-600 cursor-pointer">Delete</button> */}
-              </div>
-            </>
-          )}
+              <ContextMenu.Item>
+                <Icon name="trash" size={5} />
+                Delete
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu>
         </div>
       </div>
 
       {/* File preview */}
-      <div className="hidden sm:block bg-zinc-800 flex-1 rounded-md">
+      <div className={`hidden sm:block flex-1 rounded-md ${file.hidden ? 'bg-zinc-800/50' : 'bg-zinc-800'}`}>
       </div>
     </div>
   )
