@@ -1,32 +1,19 @@
-import Link from "next/link"
+export default function FileList({ files }) {
+  if (!files.length) return null
 
-export default function FileList({ contents, path }) {
   return (
-    <ul>
-      {/* list files and folders in current directory */}
-      {contents.sort(item => item.type === 'directory' ? -1 : 1).map((item, index) => {
-        const { name, type } = item
-        const baseStyle = "flex gap-2 items-center p-2"
+    <div className="grid grid-cols-4 gap-3">
+      {files.map((file, index) => (
+        <div key={index} className={`aspect-square flex flex-col gap-2 p-2 bg-zinc-800 rounded-xl ${file.hidden ? 'opacity-50' : ''}`}>
+          <div className="flex gap-2 items-center">
+            <img src="/icons/file-fill.svg" alt="folder icon" className="invert size-5 opacity-50" />
+            <p className="whitespace-nowrap text-ellipsis overflow-hidden">{file.name}</p>
+          </div>
 
-        return (
-          <li key={index} className={`${index + 1 !== contents.length ? 'border-b border-b-zinc-800' : ''} ${type === 'directory' ? 'hover:bg-zinc-800' : ''}`}>
-            {type === 'directory' ? (
-              <Link
-                href={`${path ? `/files/${path.map(encodeURIComponent).join('/')}` : '/files'}/${encodeURIComponent(name)}`}
-                className={baseStyle}
-              >
-                <img src="/icons/folder.svg" alt="folder icon" className="invert" />
-                {name}
-              </Link>
-            ) : (
-              <p className={baseStyle}>
-                <img src="/icons/file.svg" alt="folder icon" className="invert" />
-                {name}
-              </p>
-            )}
-          </li>
-        )
-      })}
-    </ul>
+          <div className="bg-zinc-700/50 flex-1 rounded-md">
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
