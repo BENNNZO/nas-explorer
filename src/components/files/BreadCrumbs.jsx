@@ -8,12 +8,12 @@ export default function Breadcrumbs({ path }) {
   const selectedStyle = "underline"
 
   return (
-    <div className="flex items-center text-2xl font-medium">
+    <div className="flex items-center text-2xl font-medium h-8">
       <Link
         href="/files"
-        className={`${baseStyle} ${!path ? selectedStyle : 'hover:bg-zinc-800'}`}
+        className={`p-1 rounded-full ${!path ? selectedStyle : 'hover:bg-zinc-800'}`}
       >
-        root
+        <img src="/icons/house-fill.svg" alt="house icon" className="invert size-6" />
       </Link>
 
       {path && path.map((segment, index) => (
