@@ -5,13 +5,13 @@ import Link from "next/link"
 
 export default function Breadcrumbs({ path }) {
   const baseStyle = "text-cap-center px-3 py-1 rounded-full"
-  const selectedStyle = "underline"
+  const selectedStyle = "underline cursor-default"
 
   return (
     <div className="flex items-center text-2xl font-medium h-8">
       <Link
         href="/files"
-        className={`p-1 mr-2 rounded-full ${!path ? selectedStyle : 'hover:bg-zinc-800 duration-150'}`}
+        className={`p-1 mr-2 rounded-full ${!path ? selectedStyle : ''}`}
       >
         <img src="/icons/house-fill.svg" alt="house icon" className="invert size-6" />
       </Link>
@@ -29,7 +29,7 @@ export default function Breadcrumbs({ path }) {
             // Build href from path segments up to current index: ['a','b','c'] at index 1 → /files/a/b
             <Link
               href={`/files/${path.slice(0, index + 1).join('/')}`}
-              className={`${baseStyle} hover:bg-zinc-800 duration-75`}
+              className={`${baseStyle} hover:bg-zinc-900 duration-75`}
             >
               {decodeURIComponent(segment)}
             </Link>

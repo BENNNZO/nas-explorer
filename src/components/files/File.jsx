@@ -6,7 +6,7 @@ export default function File({ file }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false)
 
   return (
-    <div className={`group sm:aspect-square flex flex-col gap-2 p-2 bg-zinc-800 rounded-xl ${file.hidden ? 'opacity-50' : ''}`}>
+    <div className={`group sm:aspect-square flex flex-col gap-2 p-2 bg-zinc-900 rounded-xl ${file.hidden ? 'opacity-50' : ''}`}>
       <div className="flex justify-between">
         {/* Icon & file name */}
         <div className="flex gap-2 items-center">
@@ -47,7 +47,7 @@ export default function File({ file }) {
                   href={`/api${location.pathname.replace('/files', '/download')}/${file.name}`}
                   download
                 >
-                  <img
+                <img
                     src="/icons/download-simple.svg"
                     alt="download icon"
                     className="invert size-5 opacity-50"
@@ -66,7 +66,7 @@ export default function File({ file }) {
       </div>
 
       {/* File preview */}
-      <div className="hidden sm:block bg-zinc-700/50 flex-1 rounded-md">
+      <div className="hidden sm:block bg-zinc-800 flex-1 rounded-md">
       </div>
     </div>
   )
