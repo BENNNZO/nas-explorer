@@ -8,7 +8,7 @@ export default function DirectoryList({ directories, path }) {
       {directories.map((directory, index) => (
         <Link
           key={index}
-          href={`${path ? `/files/${path.map(encodeURIComponent).join('/')}` : '/files'}/${encodeURIComponent(directory.name)}`}
+          href={`${path ? `/files/${path.join('/')}` : '/files'}/${encodeURIComponent(directory.name)}`}
           className={`flex gap-2 items-center px-3 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 ${directory.hidden ? 'opacity-50' : ''}`}
         >
           <img src="/icons/folder-fill.svg" alt="folder icon" className="invert size-6 opacity-50" />
