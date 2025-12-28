@@ -60,7 +60,7 @@ export default function File({ file }) {
       </div>
 
       {/* File preview */}
-      <div className={`hidden sm:block flex-1 rounded-md ${file.hidden ? 'bg-zinc-800/50' : 'bg-zinc-800'}`}>
+      <div className={`hidden sm:block flex-1 rounded-md ${file.hidden ? 'bg-zinc-800/25' : 'bg-zinc-800/50'}`}>
       </div>
     </div>
   )
