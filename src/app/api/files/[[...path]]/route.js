@@ -39,7 +39,7 @@ export async function GET(req, { params }) {
     return Response.json({ directories, files })
   } catch (err) {
     if (err.code === 'ENOENT') {
-      return Response.json({ error: 'Folder not found' }, { status: 404 })
+      return Response.json({ error: 'Directory not found' }, { status: 404 })
     }
 
     if (err.code === 'ENOTDIR') {

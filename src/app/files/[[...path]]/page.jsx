@@ -6,12 +6,14 @@ import api from "@/utils/api"
 import FileList from "@/components/files/FileList"
 import BreadCrumbs from "@/components/files/BreadCrumbs"
 import DirectoryList from "@/components/files/DirectoryList"
+import ErrorMessage from "@/components/files/ErrorMessage"
 
 export default function Files({ params }) {
   const { path } = use(params)
 
   const [directories, setDirectories] = useState([])
   const [files, setFiles] = useState([])
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     api.get(location.pathname)
@@ -19,7 +21,7 @@ export default function Files({ params }) {
         setDirectories(res.data.directories)
         setFiles(res.data.files)
       })
-      .catch(err => console.log(err))
+      .catch(err => setError(err.response.data.error))
   }, [])
 
   return (
@@ -28,14 +30,22 @@ export default function Files({ params }) {
         path={path}
       />
 
-      <DirectoryList
-        directories={directories}
-        path={path}
-      />
+      {error ? (
+        <ErrorMessage
+          error={error}
+        />
+      ) : (
+        <>
+          <DirectoryList
+            directories={directories}
+            path={path}
+          />
 
-      <FileList
-        files={files}
-      />
+          <FileList
+            files={files}
+          />
+        </>
+      )}
     </div>
   )
 }
