@@ -5,15 +5,19 @@ import { motion } from "framer-motion"
 
 const MenuContext = createContext(null)
 
-function getPosition({ left, right, top }) {
-  if (left < right) return { top, left, right: 'auto' }
-  return { top, left: 'auto', right }
+function getPosition({ top, left, contentWidth }) {
+  const windowWidth = window.innerWidth
+  const rightSide = left + contentWidth
+
+  if (rightSide > windowWidth) return { top, left: left - contentWidth}
+  return { top, left }
 }
 
 function ContextMenu({ target, children }) {
   const [isOpen, setIsOpen] = useState(false)
   const [lastUsed, setLastUsed] = useState(null) // (context | trigger)
-  const [position, setPosition] = useState({ left: 0, right: null, top: 0 })
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+  const [contentWidth, setContentWidth] = useState(0)
 
   useEffect(() => {
     const targetElement = target?.current
@@ -24,9 +28,8 @@ function ContextMenu({ target, children }) {
 
       const top = e.clientY
       const left = e.clientX
-      const relativeRight = window.innerWidth - left
 
-      setPosition(getPosition({ top, left, right: relativeRight}))
+      setPosition(getPosition({ top, left, contentWidth }))
       setLastUsed('context')
       setIsOpen(true)
     }
@@ -34,17 +37,29 @@ function ContextMenu({ target, children }) {
     targetElement.addEventListener('contextmenu', handleEvent)
 
     return () => targetElement.removeEventListener('contextmenu', handleEvent)
-  }, [target, isOpen, setPosition, setIsOpen])
+  }, [target, isOpen, contentWidth, setPosition, setIsOpen])
 
   return (
-    <MenuContext.Provider value={{ isOpen, setIsOpen, lastUsed, setLastUsed, position, setPosition, target }}>
+    <MenuContext.Provider
+      value={{
+        isOpen,
+        setIsOpen,
+        lastUsed,
+        setLastUsed,
+        position,
+        setPosition,
+        contentWidth,
+        setContentWidth,
+        target
+      }}
+    >
       {children}
     </MenuContext.Provider>
   )
 }
 
 function Trigger({ children }) {
-  const { setIsOpen, setPosition, lastUsed, setLastUsed } = useContext(MenuContext)
+  const { setIsOpen, setPosition, lastUsed, setLastUsed, contentWidth } = useContext(MenuContext)
 
   const triggerRef = useRef()
 
@@ -53,11 +68,10 @@ function Trigger({ children }) {
 
     if (!triggerRef?.current) return
 
-    const { left, right, top, height } = triggerRef.current.getBoundingClientRect()
-    const relativeRight = window.innerWidth - right
+    const { top, left, height } = triggerRef.current.getBoundingClientRect()
     const topPadding = 6
 
-    setPosition(getPosition({ top: top + height + topPadding, left, right: relativeRight}))
+    setPosition(getPosition({ top: top + height + topPadding, left, contentWidth }))
     setIsOpen(prev => {
       if (prev && lastUsed === 'context') {
         setLastUsed('trigger')
@@ -80,9 +94,11 @@ function Trigger({ children }) {
 }
 
 function Content({ children }) {
-  const { target, isOpen, setIsOpen, position: { left, right, top } } = useContext(MenuContext)
-  const wasOpenRef = useRef(false)
+  const { target, isOpen, setIsOpen, setContentWidth, position: { left, right, top } } = useContext(MenuContext)
+  const contentRef = useRef()
+  const wasOpenRef = useRef(false) // Makes sure top, left, and right are not animated when being opened
 
+  // Ensure it closes when clicked ouside to the target bounds
   useEffect(() => {
     wasOpenRef.current = isOpen
 
@@ -102,6 +118,14 @@ function Content({ children }) {
     }
   }, [isOpen])
 
+  // Setup content width state on mount
+  useEffect(() => {
+    const contentElement = contentRef?.current
+    if (!contentElement) return
+
+    setContentWidth(contentElement.clientWidth)
+  }, [])
+
   const shouldAnimatePosition = wasOpenRef.current && isOpen
   const positionTransition = {
     ease: [0.2, 1, 0.2, 1],
@@ -110,6 +134,7 @@ function Content({ children }) {
 
   return (
     <motion.div
+      ref={contentRef}
       className="z-20 fixed flex flex-col min-w-48 overflow-hidden shadow-lg rounded-md border-t border-t-zinc-700 bg-zinc-800"
       initial={{
         top, left, right,
