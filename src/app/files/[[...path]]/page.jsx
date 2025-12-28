@@ -18,7 +18,7 @@ export default function Files({ params }) {
   }, [])
 
   return (
-    <div>
+    <div className="p-8">
       <BreadCrumbs
         path={path}
       />

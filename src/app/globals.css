@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@layer utilities {
+  .text-cap-center {
+    text-box-edge: ex alphabetic;
+    text-box-trim: trim-both;
+  }
+}
