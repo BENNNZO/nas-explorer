@@ -9,11 +9,12 @@ import BreadCrumbs from "@/components/files/BreadCrumbs"
 export default function Files({ params }) {
   const { path } = use(params)
 
-  const [contents, setContents] = useState([])
+  const [directories, setDirectories] = useState([])
+  const [files, setFiles] = useState([])
 
   useEffect(() => {
     api.get(location.pathname)
-      .then(res => setContents(res.data.contents))
+      .then(res => setFiles(res.data.files))
       .catch(err => console.log(err))
   }, [])
 
@@ -24,8 +25,7 @@ export default function Files({ params }) {
       />
 
       <FileList
-        contents={contents}
-        path={path}
+        files={files}
       />
     </div>
   )
