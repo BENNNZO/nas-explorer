@@ -5,6 +5,7 @@ import api from "@/utils/api"
 
 import FileList from "@/components/files/FileList"
 import BreadCrumbs from "@/components/files/BreadCrumbs"
+import DirectoryList from "@/components/files/DirectoryList"
 
 export default function Files({ params }) {
   const { path } = use(params)
@@ -14,13 +15,21 @@ export default function Files({ params }) {
 
   useEffect(() => {
     api.get(location.pathname)
-      .then(res => setFiles(res.data.files))
+      .then(res => {
+        setDirectories(res.data.directories)
+        setFiles(res.data.files)
+      })
       .catch(err => console.log(err))
   }, [])
 
   return (
     <div className="p-8">
       <BreadCrumbs
+        path={path}
+      />
+
+      <DirectoryList
+        directories={directories}
         path={path}
       />
 
