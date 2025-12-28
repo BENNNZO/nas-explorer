@@ -4,6 +4,7 @@ import { use, useState, useEffect } from "react"
 import api from "@/utils/api"
 
 import FileList from "@/components/files/FileList"
+import BreadCrumbs from "@/components/files/BreadCrumbs"
 
 export default function Files({ params }) {
   const { path } = use(params)
@@ -18,7 +19,9 @@ export default function Files({ params }) {
 
   return (
     <div>
-      Path: {JSON.stringify(path || "undefined")}
+      <BreadCrumbs
+        path={path}
+      />
 
       <FileList
         contents={contents}
