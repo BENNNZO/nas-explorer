@@ -11,7 +11,7 @@ export default function Breadcrumbs({ path }) {
     <div className="flex items-center text-2xl font-medium h-8">
       <Link
         href="/files"
-        className={`p-1 rounded-full ${!path ? selectedStyle : 'hover:bg-zinc-800 duration-150'}`}
+        className={`p-1 mr-2 rounded-full ${!path ? selectedStyle : 'hover:bg-zinc-800 duration-150'}`}
       >
         <img src="/icons/house-fill.svg" alt="house icon" className="invert size-6" />
       </Link>
