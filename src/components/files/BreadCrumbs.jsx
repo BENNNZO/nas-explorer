@@ -2,6 +2,7 @@
 
 import { Fragment } from "react"
 import Link from "next/link"
+import Icon from "../utils/Icon"
 
 export default function Breadcrumbs({ path }) {
   const baseStyle = "text-cap-center px-3 py-1 rounded-full"
@@ -13,12 +14,12 @@ export default function Breadcrumbs({ path }) {
         href="/files"
         className={`p-1 mr-2 rounded-full ${!path ? selectedStyle : ''}`}
       >
-        <img src="/icons/house-fill.svg" alt="house icon" className="invert size-6" />
+        <Icon name="house-fill" size={6} className="invert" />
       </Link>
 
       {path && path.map((segment, index) => (
         <Fragment key={index}>
-          <img src="/icons/caret-right-bold.svg" alt="caret right icon" className="invert size-6 opacity-25" />
+          <Icon name="caret-right-bold" size={6} className="invert opacity-25" />
 
           {index === path.length - 1 ? (
             // currently opened folder

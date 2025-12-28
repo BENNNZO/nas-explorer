@@ -17,43 +17,41 @@ export default function File({ file }) {
       <div className="flex justify-between">
         {/* Icon & file name */}
         <div className="flex gap-2 items-center">
-          <img src="/icons/file-fill.svg" alt="folder icon" className="invert size-5 opacity-50" />
+          <Icon name="file-fill" />
           <p className="whitespace-nowrap text-ellipsis overflow-hidden">{file.name}</p>
         </div>
 
         <div className="flex gap-2 items-center relative">
           {/* Download button */}
           <a href={downloadHref} download>
-            <img
-              src="/icons/download-simple.svg"
-              alt="download icon"
-              className="invert size-5 opacity-0 group-hover:opacity-50 hover:opacity-100"
+            <Icon
+              name="download-simple"
+              className="opacity-0 group-hover:opacity-50 hover:opacity-100 invert"
             />
           </a>
 
           {/* Context menu */}
           <ContextMenu target={contextMenuTargetRef}>
             <ContextMenu.Trigger>
-              <img
-                src="/icons/dots-three-vertical.svg"
-                alt="context menu icon"
-                className="invert size-5 opacity-0 group-hover:opacity-50 hover:opacity-100"
+              <Icon
+                name="dots-three-vertical"
+                className="opacity-0 group-hover:opacity-50 hover:opacity-100 invert"
               />
             </ContextMenu.Trigger>
 
             <ContextMenu.Content>
               <ContextMenu.Item href={downloadHref} download>
-                <Icon name="download-simple" size={5} />
+                <Icon name="download-simple" />
                 <p>Download</p>
               </ContextMenu.Item>
 
               <ContextMenu.Item>
-                <Icon name="pencil-simple" size={5} />
+                <Icon name="pencil-simple" />
                 Edit Name
               </ContextMenu.Item>
 
               <ContextMenu.Item>
-                <Icon name="trash" size={5} />
+                <Icon name="trash" />
                 Delete
               </ContextMenu.Item>
             </ContextMenu.Content>
