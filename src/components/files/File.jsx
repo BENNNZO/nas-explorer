@@ -36,18 +36,18 @@ export default function File({ file }) {
           {/* Context menu */}
           {menuIsOpen && (
             <>
-              <div className="fixed inset-0 bg-black/25 z-10" onClick={() => setMenuIsOpen(false)} />
+              <div className="fixed inset-0 bg-black/50 z-10" onClick={() => setMenuIsOpen(false)} />
 
               <div
                 onClick={() => setMenuIsOpen(false)}
                 className="absolute top-full right-0 z-20 overflow-hidden whitespace-nowrap flex flex-col gap-px w-48 bg-zinc-600 rounded-md"
               >
                 <a
-                  className="text-left bg-zinc-700 px-2 py-1 hover:bg-zinc-600 cursor-pointer flex gap-2 items-center"
+                  className="text-left bg-zinc-800 px-2 py-1 hover:bg-zinc-600 cursor-pointer flex gap-2 items-center"
                   href={`/api${location.pathname.replace('/files', '/download')}/${file.name}`}
                   download
                 >
-                <img
+                  <img
                     src="/icons/download-simple.svg"
                     alt="download icon"
                     className="invert size-5 opacity-50"
