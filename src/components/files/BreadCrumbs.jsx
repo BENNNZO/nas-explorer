@@ -4,11 +4,11 @@ import { Fragment } from "react"
 import Link from "next/link"
 
 export default function Breadcrumbs({ path }) {
-  const baseStyle = "text-cap-center px-2.5 py-2 rounded-full"
+  const baseStyle = "text-cap-center px-3 py-1 rounded-full"
   const selectedStyle = "underline"
 
   return (
-    <div className="flex items-center mb-4 text-2xl font-medium">
+    <div className="flex items-center text-2xl font-medium">
       <Link
         href="/files"
         className={`${baseStyle} ${!path ? selectedStyle : 'hover:bg-zinc-800'}`}
