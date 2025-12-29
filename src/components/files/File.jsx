@@ -3,11 +3,19 @@
 import { useState, useRef } from "react"
 import ContextMenu from "../utils/ContextMenu"
 import Icon from "../utils/Icon"
+import api from "@/utils/axios"
 
 export default function File({ file }) {
+  const [localFileName, setLocalFileName] = useState(file.name)
   const contextMenuTargetRef = useRef()
 
   const downloadHref = `/api${location.pathname.replace('/files', '/download')}/${file.name}`
+
+  function handleRename(newName) {
+    api.patch(`${location.pathname}/${file.name}`, { newName })
+      .then(() => setLocalFileName(newName))
+      .catch(err => console.log(err))
+  }
 
   return (
     <div
@@ -18,7 +26,7 @@ export default function File({ file }) {
         {/* Icon & file name */}
         <div className="flex gap-2 items-center overflow-hidden">
           <Icon name="file-fill" />
-          <p className="whitespace-nowrap text-ellipsis overflow-hidden">{file.name}</p>
+          <p className="whitespace-nowrap text-ellipsis overflow-hidden">{localFileName}</p>
         </div>
 
         <div className="flex gap-2 items-center w-0 group-hover:w-auto shrink-0">
@@ -45,7 +53,10 @@ export default function File({ file }) {
                 <p>Download</p>
               </ContextMenu.Item>
 
-              <ContextMenu.Item>
+              <ContextMenu.Item onClick={() => {
+                const newName = window.prompt('New file name:', localFileName)
+                if (newName) handleRename(newName)
+              }}>
                 <Icon name="pencil-simple" />
                 Edit Name
               </ContextMenu.Item>

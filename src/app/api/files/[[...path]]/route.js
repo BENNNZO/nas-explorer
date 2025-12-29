@@ -35,3 +35,29 @@ export async function GET(req, { params }) {
     return handleFsError(err)
   }
 }
+
+export async function PATCH(req, { params }) {
+  try {
+    const { path: pathSegments } = await params
+    const { newName } = await req.json()
+
+    if (!newName || typeof newName !== 'string') {
+      return Response.json({ error: 'New name required' }, { status: 400 })
+    }
+
+    // original path to old file name
+    const oldRelativePath = pathSegments?.map(decodeURIComponent).join('/') || ''
+    const oldFullPath = getValidatedPath(oldRelativePath)
+
+    // new path to new file name
+    const newRelativePath = nodePath.join(nodePath.dirname(oldRelativePath), newName)
+    const newFullPath = getValidatedPath(newRelativePath)
+
+    // rename file
+    await fs.rename(oldFullPath, newFullPath)
+
+    return Response.json({ success: true })
+  } catch (err) {
+    return handleFsError(err)
+  }
+}
