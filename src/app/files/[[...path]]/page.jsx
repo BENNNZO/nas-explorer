@@ -28,15 +28,15 @@ export default function Files({ params }) {
   }, [])
 
   return (
-    <main ref={pageContainerRef} className="max-w-7xl mx-auto min-h-screen">
-      <ContextMenu target={pageContainerRef}>
-        <ContextMenu.Content>
-          <ContextMenu.Item>New Folder</ContextMenu.Item>
-          <ContextMenu.Item>New File</ContextMenu.Item>
-        </ContextMenu.Content>
-      </ContextMenu>
+    <>
+      <main ref={pageContainerRef} className="max-w-7xl mx-auto min-h-screen p-8 flex flex-col gap-8">
+        <ContextMenu target={pageContainerRef}>
+          <ContextMenu.Content>
+            <ContextMenu.Item>New Folder</ContextMenu.Item>
+            <ContextMenu.Item>New File</ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu>
 
-      <div className="p-8 flex flex-col gap-8">
         <BreadCrumbs path={path} />
 
         {error ? (
@@ -47,7 +47,7 @@ export default function Files({ params }) {
             <FileList files={files} />
           </>
         )}
-      </div>
-    </main>
+      </main>
+    </>
   )
 }

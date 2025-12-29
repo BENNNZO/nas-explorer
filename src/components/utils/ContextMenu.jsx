@@ -34,20 +34,30 @@ function ContextMenu({ target, children }) {
 
     function handleOutsideClick(e) {
       if (!isOpen) return
-      // Always close on right-click, close on left-click only if outside trigger
-      if (e.type === 'contextmenu' || !triggerButtonRef.current?.contains(e.target)) {
-        setIsOpen(false)
+
+      switch (e.type) {
+        case 'contextmenu':
+          const closestTarget = e.target.closest('[data-context-menu-target]')
+          if (closestTarget !== targetElement) setIsOpen(false)
+          break
+        case 'click':
+          if (!triggerButtonRef.current?.contains(e.target)) setIsOpen(false)
+          break
+        default:
+          setIsOpen(false)
       }
     }
 
     targetElement.addEventListener('contextmenu', handleContextMenu)
     document.addEventListener('click', handleOutsideClick, true)
     document.addEventListener('contextmenu', handleOutsideClick, true)
+    targetElement.dataset.contextMenuTarget = ''
 
     return () => {
       targetElement.removeEventListener('contextmenu', handleContextMenu)
       document.removeEventListener('click', handleOutsideClick, true)
       document.removeEventListener('contextmenu', handleOutsideClick, true)
+      delete targetElement.dataset.contextMenuTarget
     }
   }, [target, isOpen, contentWidth])
 
