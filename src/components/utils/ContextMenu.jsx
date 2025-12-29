@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useRef } from "react"
+import { createContext, useContext, useState, useEffect, useRef, useMemo } from "react"
 import { motion } from "framer-motion"
 
 const MenuContext = createContext(null)
@@ -9,139 +9,118 @@ function getPosition({ top, left, contentWidth }) {
   const windowWidth = window.innerWidth
   const rightSide = left + contentWidth
 
-  if (rightSide > windowWidth) return { top, left: left - contentWidth}
+  if (rightSide > windowWidth) return { top, left: left - contentWidth }
   return { top, left }
 }
 
 function ContextMenu({ target, children }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [lastUsed, setLastUsed] = useState(null) // (context | trigger)
+  const [lastUsed, setLastUsed] = useState(null)
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const [contentWidth, setContentWidth] = useState(0)
+  const triggerButtonRef = useRef()
 
   useEffect(() => {
     const targetElement = target?.current
     if (!targetElement) return
 
-    function handleEvent(e) {
+    function handleContextMenu(e) {
       e.preventDefault()
-
-      const top = e.clientY
-      const left = e.clientX
-
-      setPosition(getPosition({ top, left, contentWidth }))
+      e.stopPropagation()
+      setPosition(getPosition({ top: e.clientY, left: e.clientX, contentWidth }))
       setLastUsed('context')
       setIsOpen(true)
     }
 
-    targetElement.addEventListener('contextmenu', handleEvent)
+    function handleOutsideClick(e) {
+      if (!isOpen) return
+      // Always close on right-click, close on left-click only if outside trigger
+      if (e.type === 'contextmenu' || !triggerButtonRef.current?.contains(e.target)) {
+        setIsOpen(false)
+      }
+    }
 
-    return () => targetElement.removeEventListener('contextmenu', handleEvent)
-  }, [target, isOpen, contentWidth, setPosition, setIsOpen])
+    targetElement.addEventListener('contextmenu', handleContextMenu)
+    document.addEventListener('click', handleOutsideClick, true)
+    document.addEventListener('contextmenu', handleOutsideClick, true)
+
+    return () => {
+      targetElement.removeEventListener('contextmenu', handleContextMenu)
+      document.removeEventListener('click', handleOutsideClick, true)
+      document.removeEventListener('contextmenu', handleOutsideClick, true)
+    }
+  }, [target, isOpen, contentWidth])
+
+  const contextValue = useMemo(() => ({
+    isOpen,
+    setIsOpen,
+    lastUsed,
+    setLastUsed,
+    position,
+    setPosition,
+    contentWidth,
+    setContentWidth,
+    triggerButtonRef,
+  }), [isOpen, lastUsed, position, contentWidth])
 
   return (
-    <MenuContext.Provider
-      value={{
-        isOpen,
-        setIsOpen,
-        lastUsed,
-        setLastUsed,
-        position,
-        setPosition,
-        contentWidth,
-        setContentWidth,
-        target
-      }}
-    >
+    <MenuContext.Provider value={contextValue}>
       {children}
     </MenuContext.Provider>
   )
 }
 
 function Trigger({ children }) {
-  const { setIsOpen, setPosition, lastUsed, setLastUsed, contentWidth } = useContext(MenuContext)
-
-  const triggerRef = useRef()
+  const { setIsOpen, setPosition, lastUsed, setLastUsed, contentWidth, triggerButtonRef } = useContext(MenuContext)
 
   function handleClick(e) {
     e.preventDefault()
+    if (!triggerButtonRef?.current) return
 
-    if (!triggerRef?.current) return
+    const { top, left, height } = triggerButtonRef.current.getBoundingClientRect()
 
-    const { top, left, height } = triggerRef.current.getBoundingClientRect()
-    const topPadding = 6
-
-    setPosition(getPosition({ top: top + height + topPadding, left, contentWidth }))
+    setPosition(getPosition({ top: top + height + 6, left, contentWidth }))
     setIsOpen(prev => {
-      if (prev && lastUsed === 'context') {
-        setLastUsed('trigger')
-        return true
-      }
-
+      setLastUsed('trigger')
+      if (prev && lastUsed === 'context') return true
       return !prev
     })
   }
 
   return (
-    <button
-      ref={triggerRef}
-      onClick={handleClick}
-      className="cursor-pointer"
-    >
+    <button ref={triggerButtonRef} onClick={handleClick} className="cursor-pointer">
       {children}
     </button>
   )
 }
 
 function Content({ children }) {
-  const { target, isOpen, setIsOpen, setContentWidth, position: { left, right, top } } = useContext(MenuContext)
+  const { isOpen, setContentWidth, position: { left, top } } = useContext(MenuContext)
   const contentRef = useRef()
-  const wasOpenRef = useRef(false) // Makes sure top, left, and right are not animated when being opened
+  const wasOpenRef = useRef(false)
 
-  // Ensure it closes when clicked ouside to the target bounds
+  useEffect(() => {
+    if (contentRef.current) setContentWidth(contentRef.current.clientWidth)
+  }, [setContentWidth])
+
   useEffect(() => {
     wasOpenRef.current = isOpen
-
-    const targetElement = target?.current
-    if (!targetElement || !isOpen) return
-
-    function handleOutsideClick(e) {
-      if (!targetElement.contains(e.target)) setIsOpen(false)
-    }
-
-    document.addEventListener('click', handleOutsideClick)
-    document.addEventListener('contextmenu', handleOutsideClick)
-
-    return () => {
-      document.removeEventListener('click', handleOutsideClick)
-      document.removeEventListener('contextmenu', handleOutsideClick)
-    }
   }, [isOpen])
 
-  // Setup content width state on mount
-  useEffect(() => {
-    const contentElement = contentRef?.current
-    if (!contentElement) return
-
-    setContentWidth(contentElement.clientWidth)
-  }, [])
-
-  const shouldAnimatePosition = wasOpenRef.current && isOpen
+  const shouldAnimate = wasOpenRef.current && isOpen
   const positionTransition = {
     ease: [0.2, 1, 0.2, 1],
-    duration: shouldAnimatePosition ? 0.5 : 0
+    duration: shouldAnimate ? 0.5 : 0
   }
 
   return (
     <motion.div
       ref={contentRef}
       className="z-20 fixed flex flex-col min-w-48 overflow-hidden shadow-lg rounded-md border-t border-t-zinc-700 bg-zinc-800"
-      initial={{
-        top, left, right,
-        opacity: 0,
-      }}
+      initial={{ top, left, opacity: 0 }}
       animate={{
-        top, left, right,
+        top,
+        left,
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? 'auto' : 'none',
         height: isOpen ? 'auto' : 0,
@@ -149,7 +128,6 @@ function Content({ children }) {
       transition={{
         top: positionTransition,
         left: positionTransition,
-        right: positionTransition,
         duration: 0.5,
         ease: [0.2, 1, 0.2, 1],
       }}
