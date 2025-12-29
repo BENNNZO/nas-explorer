@@ -7,6 +7,7 @@ import api from "@/utils/axios"
 
 export default function File({ file }) {
   const [localFileName, setLocalFileName] = useState(file.name)
+  const [fileDeleted, setFileDeleted] = useState(false)
   const contextMenuTargetRef = useRef()
 
   const downloadHref = `/api${location.pathname.replace('/files', '/download')}/${file.name}`
@@ -17,10 +18,16 @@ export default function File({ file }) {
       .catch(err => console.log(err))
   }
 
+  function handleDelete() {
+    api.delete(`${location.pathname}/${file.name}`)
+      .then(() => setFileDeleted(true))
+      .catch(err => console.log(err))
+  }
+
   return (
     <div
       ref={contextMenuTargetRef}
-      className={`group sm:aspect-square flex flex-col gap-2 p-2 ${file.hidden ? 'bg-zinc-900/50' : 'bg-zinc-900'} rounded-xl`}
+      className={`group sm:aspect-square flex flex-col gap-2 p-2 ${fileDeleted ? 'hidden' : ''} ${file.hidden ? 'bg-zinc-900/50' : 'bg-zinc-900'} rounded-xl`}
     >
       <div className="flex justify-between">
         {/* Icon & file name */}
@@ -53,15 +60,22 @@ export default function File({ file }) {
                 <p>Download</p>
               </ContextMenu.Item>
 
-              <ContextMenu.Item onClick={() => {
+              <ContextMenu.Item
+              onClick={() => {
                 const newName = window.prompt('New file name:', localFileName)
                 if (newName) handleRename(newName)
-              }}>
+              }}
+              >
                 <Icon name="pencil-simple" />
                 Edit Name
               </ContextMenu.Item>
 
-              <ContextMenu.Item>
+              <ContextMenu.Item
+                onClick={() => {
+                  const confirm = window.confirm(`Are you sure you want to delete: ${localFileName}`)
+                  if (confirm) handleDelete()
+                }}
+              >
                 <Icon name="trash" />
                 Delete
               </ContextMenu.Item>

@@ -61,3 +61,23 @@ export async function PATCH(req, { params }) {
     return handleFsError(err)
   }
 }
+
+export async function DELETE(req, { params }) {
+  try {
+    const { path: pathSegments } = await params
+    const relativePath = pathSegments?.map(decodeURIComponent).join('/') || ''
+    const fullPath = getValidatedPath(relativePath)
+
+    const stats = await fs.stat(fullPath)
+
+    if (stats.isDirectory()) {
+      await fs.rm(fullPath, { recursive: true })
+    } else {
+      await fs.unlink(fullPath)
+    }
+
+    return Response.json({ success: true })
+  } catch (err) {
+    return handleFsError(err)
+  }
+}
